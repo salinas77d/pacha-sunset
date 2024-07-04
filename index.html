@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenida a Pacha SunsetShow</title>
+  <style>
+    body {
+      font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, sans-serif;
+      background-image: url('web.jpeg'); /* URL de tu imagen de fondo */
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      position: relative;
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #333333;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555555;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .felicitacion {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      color: #333;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco con transparencia */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Media query para dispositivos móviles */
+    @media screen and (max-width: 600px) {
+      .container {
+        max-width: 100%; /* Ajusta el ancho máximo para ocupar todo el ancho disponible */
+        padding: 10px;
+      }
+
+      h2 {
+        font-size: 20px; /* Reducir el tamaño de fuente del título */
+      }
+
+      p {
+        font-size: 14px; /* Reducir el tamaño de fuente del texto */
+      }
+    }
+
+    /* Estilos para el modal */
+    .modal {
+      display: none; /* Oculto por defecto */
+      position: fixed; /* Posición fija para superponer sobre el contenido */
+      z-index: 1; /* Encima de todo el contenido */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; /* Habilita el scroll si es necesario */
+      background-color: rgba(0,0,0,0.4); /* Color de fondo oscuro con transparencia */
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto; /* Centra el modal */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%; /* Ancho del modal */
+      max-width: 250px; /* Ancho máximo */
+      border-radius: 14px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight:bolder;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Estilos específicos para el botón "Borrar Registros" */
+    #btnBorrarRegistros {
+      background-color: rgba(255, 255, 255, 0.8); /* Color gris */
+      color:black;
+      border: none;
+      padding: 10px 7px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    #btnBorrarRegistros:hover {
+      background-color: #616161; /* Color gris oscuro al pasar el cursor */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Show Cumpleañero</h2>
+    <p>¿Está el cumpleañero/a Para Festejarlo?</p>
+    <button onclick="abrirModal('si')">Sí</button>
+    <button onclick="mostrarMensaje('no')">No</button>
+    <p id="mensaje"></p>
+    <div id="registro" style="margin-top: 20px;">
+      <h3>Registros de entrega:</h3>
+      <ul id="registroLista"></ul>
+      <button id="btnBorrarRegistros" onclick="abrirModalBorrar()">Borrar Registros</button>
+    </div>
+  </div>
+
+  <div class="felicitacion" id="felicitacion">
+    ¡Feliz cumpleaños! ¡Que la pase muy bien!
+  </div>
+
+  <!-- Modal de Confirmación de Borrar Registros -->
+  <div id="modalBorrar" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalBorrar()">&times;</span>
+      <p>Ingrese la contraseña para confirmar:</p>
+      <input type="password" id="inputContraseñaBorrar">
+      <button onclick="confirmarBorrar()">Confirmar</button>
+    </div>
+  </div>
+
+  <!-- Modal para Ingresar Número de Carne o NIT -->
+  <div id="modalNumero" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModalNumero()">&times;</span>
+      <p>Ingrese el número de carnet o NIT:</p>
+      <input type="text" id="inputNumero" autocomplete="off">
+      <button onclick="registrarEntrega()">Enviar</button>
+    </div>
+  </div>
+
+  <!-- Confetti.js -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.3/dist/confetti.browser.min.js"></script>
+ 
+  <script>
+    // Variables para los modales y la opción seleccionada
+    var modalNumero = document.getElementById("modalNumero");
+    var modalBorrar = document.getElementById("modalBorrar");
+    var felicitacion = document.getElementById("felicitacion");
+    var opcionSeleccionada = "";
+
+    function abrirModal(opcion) {
+      opcionSeleccionada = opcion;
+      modalNumero.style.display = "block";
+    }
+
+    function cerrarModalNumero() {
+      modalNumero.style.display = "none";
+      document.getElementById("inputNumero").value = ""; // Limpia el campo de entrada
+    }
+
+    function mostrarMensaje(opcion) {
+      var mensajeElemento = document.getElementById("mensaje");
+      if (opcion === 'si') {
+        mensajeElemento.textContent = "¡Feliz cumpleaños! ¡Que la pase muy bien!";
+        abrirModal(opcion);
+      } else if (opcion === 'no') {
+        mensajeElemento.textContent = "¡Qué lastima!";
+      }
+    }
+
+    function registrarEntrega() {
+      var numeroIngresado = document.getElementById("inputNumero").value;
+      var ahora = new Date();
+      var horaEntrega = ahora.toLocaleString(); // Obtiene la fecha y hora actual en formato legible
+      var registroLista = document.getElementById("registroLista");
+      var nuevoRegistro = document.createElement("li");
+      nuevoRegistro.textContent = "Show entregado " + numeroIngresado + ": " + horaEntrega;
+      registroLista.appendChild(nuevoRegistro); // Añade el nuevo registro a la lista
+
+      // Guardar en Local Storage
+      guardarRegistroEnLocalStorage();
+
+      cerrarModalNumero(); // Asegúrate de que esta función se llame
+
+      // Mostrar mensaje de felicitación y confeti
+      felicitacion.style.display = "block";
+      lanzarConfeti();
+  
+
+      // Ocultar mensaje de felicitación después de 5 segundos
+      setTimeout(function() {
+        felicitacion.style.display = "none";
+      }, 3000);
+    }
+
+    function guardarRegistroEnLocalStorage() {
+      var registros = [];
+      var listaRegistros = document.getElementById("registroLista").getElementsByTagName("li");
+      for (var i = 0; i < listaRegistros.length; i++) {
+        registros.push(listaRegistros[i].textContent);
+      }
+      localStorage.setItem("registros", JSON.stringify(registros));
+    }
+
+    function cargarRegistros() {
+      var registros = JSON.parse(localStorage.getItem("registros")) || [];
+      var registroLista = document.getElementById("registroLista");
+      registros.forEach(function(registro) {
+        var nuevoRegistro = document.createElement("li");
+        nuevoRegistro.textContent = registro;
+        registroLista.appendChild(nuevoRegistro);
+      });
+    }
+
+    function abrirModalBorrar() {
+      modalBorrar.style.display = "block";
+    }
+
+    function cerrarModalBorrar() {
+      modalBorrar.style.display = "none";
+      document.getElementById("inputContraseñaBorrar").value = "";
+    }
+
+    function confirmarBorrar() {
+      var contraseñaIngresada = document.getElementById("inputContraseñaBorrar").value;
+      if (contraseñaIngresada === "sopa") { // Cambia "sopa" por tu contraseña real
+        localStorage.removeItem("registros");
+        document.getElementById("registroLista").innerHTML = ""; // Limpia la lista visual de registros
+        cerrarModalBorrar();
+      } else {
+        alert("Contraseña incorrecta. No se pueden borrar los registros.");
+      }
+    }
+
+    // Carga los registros al cargar la página
+    document.addEventListener("DOMContentLoaded", function() {
+      cargarRegistros();
+    });
+
+    // Cierra los modales si el usuario hace clic fuera de ellos
+    window.onclick = function(event) {
+      if (event.target == modalNumero) {
+        cerrarModalNumero();
+      } else if (event.target == modalBorrar) {
+        cerrarModalBorrar();
+      }
+    }
+
+    function lanzarConfeti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
+</body>
+</html>
